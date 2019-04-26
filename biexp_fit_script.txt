@@ -1,0 +1,59 @@
+KillWaves/A/Z
+
+Sort/R wave0,wave0
+
+Make/N=(numpnts(wave0))/D N_N0	
+N_N0 = (p+1)/numpnts(wave0)	
+AppendToTable /W=Table0 N_N0
+
+Display N_N0 vs wave0
+ModifyGraph mode=3,marker=1,mrkThick=1,rgb=(0,0,0)
+ModifyGraph grid=1,gridRGB=(21760,21760,21760)
+Label left "\\Z14N/N\B0 \\Z01\\K(65535,65535,65535)\\u"
+Label bottom "\\Z14Time / s \\Z01\\K(65535,65535,65535)\\u"
+ModifyGraph fSize(left)=14
+ModifyGraph fSize=14
+ModifyGraph log(left)=1
+//SetAxis left 0.01,1
+
+Make/D/N=4/O W_coef
+W_coef[0] = {0.5,0.5,1,1}
+FuncFit/NTHR=0 biexponential_decay W_coef  N_N0 /X=wave0 /D 
+//ModifyGraph lsize(fit_N_N0)=1.5
+//ModifyGraph rgb(fit_N_N0)=(0,0,0)
+//ModifyGraph mode(fit_N_N0)=0,lstyle(fit_N_N0)=11
+RemoveFromGraph fit_N_N0
+
+Make/N=4/T W_names
+W_names[0]="A1"
+W_names[1]="A2"
+W_names[2]="k1"
+W_names[3]="k2"
+Edit W_names,W_coef,W_sigma
+
+Make/N=1000/D x_fit
+x_fit = p*wave0[0]/999
+AppendToTable /W=Table0 x_fit
+
+Make/N=1000/D k1_fit
+k1_fit=W_coef[0]*exp(-W_coef[2]*x_fit)
+AppendToTable /W=Table0 k1_fit
+
+Make/N=1000/D k2_fit
+k2_fit=exp(-W_coef[3]*x_fit)
+AppendToTable /W=Table0 k2_fit
+
+AppendToGraph /W=Graph0 k1_fit vs x_fit
+ModifyGraph lsize(k1_fit)=1
+ModifyGraph rgb(k1_fit)=(0,0,0)
+ModifyGraph mode(k1_fit)=0,lstyle(k1_fit)=0
+
+AppendToGraph /W=Graph0 k2_fit vs x_fit
+ModifyGraph lsize(k2_fit)=1
+ModifyGraph rgb(k2_fit)=(0,0,0)
+ModifyGraph mode(k2_fit)=0,lstyle(k2_fit)=7
+
+Legend/C/N=text0/J "\\s(N_N0) measured data\r\\s(k1_fit) slow process\r\\s(k2_fit) fast process"
+
+//Legend/C/N=text0/J "\\s(N_N0) measured data\r\\s(k1_fit) slow process\r\\s(k2_fit) fast process"/E=2
+

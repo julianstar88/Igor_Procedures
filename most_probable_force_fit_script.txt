@@ -1,0 +1,27 @@
+KillWaves/A/Z
+
+Display wave0 vs wave1
+ModifyGraph mode=3,marker=8,mrkThick=1
+ModifyGraph grid=1,gridRGB=(21760,21760,21760)
+Label left "\\Z14F\\Br\\M \\Z14/ nN \\Z01\\K(65535,65535,65535)\\u"
+Label bottom "\\Z14Force Loading Rate / nN/s \\Z01\\K(65535,65535,65535)\\u"
+ModifyGraph fSize(left)=14
+ModifyGraph fSize=14
+ModifyGraph log(bottom)=1,loglinear=1
+
+Make/D/N=4/O W_coef
+W_coef[0] = {1e-11,1e-3,1.38e-23,293}
+Make/O/T/N=4 T_Constraints
+//T_Constraints[0] = {"K0 > 0","K0 < 1e-9","K1 > 0","K1 < 1"}
+FuncFit/H="0011"/NTHR=0 most_probable_force_fit W_coef  wave0 /X=wave1 /D ///C=T_Constraints 
+ModifyGraph lsize(fit_wave0)=1
+ModifyGraph rgb(fit_wave0)=(0,0,0)
+ModifyGraph mode(fit_wave0)=0,lstyle(fit_wave0)=11
+Legend/C/N=legend/J/A=MT/E=2 "\\s(wave0) measured data\r\\s(fit_wave0) most probable force"
+
+Make/N=4/T W_names
+W_names[0]="dx"
+W_names[1]="koff"
+W_names[2]="kb"
+W_names[3]="T"
+Edit W_names,W_coef,W_sigma
